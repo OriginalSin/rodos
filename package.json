@@ -1,0 +1,22 @@
+{
+  "name": "rodos",
+  "version": "1.0.0",
+  "description": "Rodos",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OriginalSin/rodos.git"
+  },
+  "author": "Serg",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/OriginalSin/rodos/issues"
+  },
+  "homepage": "https://github.com/OriginalSin/rodos#readme",
+  "dependencies": {
+    "gulp": "^3.9.1"
+  }
+}
