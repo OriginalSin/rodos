@@ -17,6 +17,7 @@
             border: 1px solid lightgray;
         }
     </style>
+    <script type="text/javascript" src="./js/jsonpLoader.js"></script>
     <script type="text/javascript" src="./lib/vis.js"></script>
     <link href="./lib/vis-network.min.css" rel="stylesheet" type="text/css"/>
 
@@ -25,6 +26,12 @@
         var network = null;
         var directionInput = document.getElementById("direction");
 
+        function setItem(file) {
+			window.rodos.jsonp('./data/' + file, function(data) {
+				window.draw(data);
+            });
+        }
+
         function destroy() {
             if (network !== null) {
                 network.destroy();
@@ -32,50 +39,43 @@
             }
         }
 
-        function draw() {
+        function draw(data) {
             destroy();
             var connectionCount = [];
 
-            var data = {};
-            // create a network
-            var container = document.getElementById('mynetwork');
-			fetch('./data/rodos.json').then(function(resp) {
-				return resp.json();
-			}).then(function(json) {
-				data = json;
+			var options = {
+				edges: {
+					smooth: {
+						type: 'cubicBezier',
+						forceDirection: (directionInput.value == "UD" || directionInput.value == "DU") ? 'vertical' : 'horizontal',
+						roundness: 0.4
+					}
+				},
+				nodes: {
+					shape: 'box'
+				},
+				layout: {
+					hierarchical: {
+						nodeSpacing: 300,
+						direction: directionInput.value
+					}
+				},
+				physics: true
+			};
+			network = new vis.Network(document.getElementById('mynetwork'), data, options);
 
-				var options = {
-					edges: {
-						smooth: {
-							type: 'cubicBezier',
-							forceDirection: (directionInput.value == "UD" || directionInput.value == "DU") ? 'vertical' : 'horizontal',
-							roundness: 0.4
-						}
-					},
-					layout: {
-						hierarchical: {
-							nodeSpacing: 300,
-							direction: directionInput.value
-						}
-					},
-					physics: true
-				};
-				network = new vis.Network(container, data, options);
-
-				// add event listeners
-				network.on('select', function (params) {
-					document.getElementById('selection').innerHTML = 'Selection: ' + params.nodes;
-				});
+			// add event listeners
+			network.on('select', function (params) {
+				document.getElementById('selection').innerHTML = 'Selection: ' + params.nodes;
 			});
         }
-
     </script>
 </head>
 
 <body onload="draw();">
 <h2>Hierarchical Layout - User-defined</h2>
 
-<div style="width:700px; font-size:14px; text-align: justify;">
+<div class="selContainer" style="width:700px; font-size:14px; text-align: justify;">
     This example shows a user-defined hierarchical layout. If the user defines levels for nodes but does not do so for
     all nodes, an alert will show up and hierarchical layout will be disabled. Either all or none can be defined.
     If the smooth curves appear to be inverted, the direction of the edge is not in the same direction as the network.
@@ -113,6 +113,24 @@
         directionInput.value = "RL";
         draw();
     };
+
+	// загрузим список готовых родословных JSONP файлов
+	window.rodos.jsonp('./json/config.jsonp', function(data) {
+		// console.log('jsonp', data);
+		var select = document.createElement('select');
+		data.unshift('Выбрать родословную:');
+		data.forEach(function(it) {
+			var option = document.createElement('option');
+			option.text = it;
+			select.append(option);
+		});
+		var selContainer = document.getElementsByClassName('selContainer')[0];
+		selContainer.innerHTML = '';
+		selContainer.append(select);
+		select.onchange = function() {
+			window.setItem(select.selectedOptions[0].text);
+		};
+	});
 </script>
 </body>
 </html>

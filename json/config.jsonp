@@ -1,0 +1,6 @@
+rodos.jsonpCallback([
+  "0.jsonp",
+  "1.jsonp",
+  "2.jsonp",
+  "rodos.jsonp"
+])
