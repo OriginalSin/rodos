@@ -23,12 +23,14 @@
 
 
     <script type="text/javascript">
+        var prevData = null;
         var network = null;
         var directionInput = document.getElementById("direction");
 
         function setItem(file) {
 			window.rodos.jsonp('./data/' + file, function(data) {
 				window.draw(data);
+				prevData = data;
             });
         }
 
@@ -62,7 +64,7 @@
 				},
 				physics: true
 			};
-			network = new vis.Network(document.getElementById('mynetwork'), data, options);
+			network = new vis.Network(document.getElementById('mynetwork'), data || prevData, options);
 
 			// add event listeners
 			network.on('select', function (params) {
@@ -72,7 +74,7 @@
     </script>
 </head>
 
-<body onload="draw();">
+<body>
 <h2>Hierarchical Layout - User-defined</h2>
 
 <div class="selContainer" style="width:700px; font-size:14px; text-align: justify;">
